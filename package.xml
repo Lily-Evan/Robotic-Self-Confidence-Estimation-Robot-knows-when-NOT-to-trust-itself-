@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>robot_confidence</name>
+  <version>0.0.1</version>
+  <description>Robot self-confidence estimation and behavior adaptation</description>
+
+  <maintainer email="you@example.com">Your Name</maintainer>
+  <license>MIT</license>
+
+  <!-- Για ament_python packages, μένει αυτό -->
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <export>
+    <!-- ΑΥΤΟ έλειπε και έκανε το colcon να σε περνάει για CMake package -->
+    <build_type>ament_python</build_type>
+  </export>
+</package>
+

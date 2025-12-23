@@ -1,0 +1,15 @@
+confidence_estimator:
+  ros__parameters:
+    w_vo: 0.3
+    w_slam: 0.4
+    w_drift: 0.2
+    w_noise: 0.1
+
+    th_aggressive: 0.7
+    th_conservative: 0.4
+
+navigation_behavior:
+  ros__parameters:
+    v_aggressive: 0.8
+    v_conservative: 0.4
+    v_safe: 0.1
