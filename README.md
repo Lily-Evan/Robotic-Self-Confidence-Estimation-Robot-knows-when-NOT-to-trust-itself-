@@ -38,9 +38,9 @@ The objective is to enable a robot to **reason about its own reliability** and a
 
 We introduce an explicit confidence signal:
 
-[
-C(t) \in [0, 1]
-]
+<p align="center">
+  <img alt="C(t) in [0,1]" src="https://latex.codecogs.com/svg.image?\Large%20C(t)\in[0,1]" />
+</p>
 
 computed online and used to modulate behaviour between:
 
@@ -62,7 +62,7 @@ Modern robotic stacks depend on perception and localization modules (VO, SLAM, s
 
 **Research question:**
 
-> Can we design a principled confidence estimator that aggregates uncertainty cues from the perception stack and exposes a scalar signal (C(t)) usable by navigation to improve safety and robustness?
+> Can we design a principled confidence estimator that aggregates uncertainty cues from the perception stack and exposes a scalar signal usable by navigation to improve safety and robustness?
 
 This repository implements a **first, modular baseline**.
 
@@ -90,7 +90,7 @@ The confidence estimator ingests four normalized signals:
   `sensor_noise ∈ [0, 1]`
   0 = clean measurements, 1 = very noisy sensing (e.g., heavy LiDAR or camera noise).
 
-All inputs are assumed to be **pre-normalized** to ([0,1]) by upstream modules or simple heuristics.
+All inputs are assumed to be **pre-normalized** to `[0, 1]` by upstream modules or simple heuristics.
 
 ---
 
@@ -98,23 +98,18 @@ All inputs are assumed to be **pre-normalized** to ([0,1]) by upstream modules o
 
 The scalar confidence score is computed as:
 
-[
-C(t) = \text{clip}*{[0,1]} \Big(
-w*{\text{vo}} (1 - u_{\text{vo}}) +
-w_{\text{slam}} q_{\text{slam}} +
-w_{\text{drift}} (1 - d) +
-w_{\text{noise}} (1 - n)
-\Big)
-]
+<p align="center">
+  <img alt="Confidence equation" src="https://latex.codecogs.com/svg.image?\Large%20C(t)=\mathrm{clip}_{[0,1]}\Big(w_{vo}(1-u_{vo})+w_{slam}q_{slam}+w_{drift}(1-d)+w_{noise}(1-n)\Big)" />
+</p>
 
 where:
 
-* (u_{\text{vo}}) = `vo_uncertainty`
-* (q_{\text{slam}}) = `slam_quality`
-* (d) = `drift_norm`
-* (n) = `sensor_noise`
-* (w_{\text{vo}}, w_{\text{slam}}, w_{\text{drift}}, w_{\text{noise}}) are non-negative weights
-* Weights are normalized internally so that (\sum_i w_i = 1)
+* <img alt="u_vo" src="https://latex.codecogs.com/svg.image?u_{vo}" /> = `vo_uncertainty`
+* <img alt="q_slam" src="https://latex.codecogs.com/svg.image?q_{slam}" /> = `slam_quality`
+* <img alt="d" src="https://latex.codecogs.com/svg.image?d" /> = `drift_norm`
+* <img alt="n" src="https://latex.codecogs.com/svg.image?n" /> = `sensor_noise`
+* weights <img alt="weights" src="https://latex.codecogs.com/svg.image?w_{vo},w_{slam},w_{drift},w_{noise}\ge0" />
+* normalized internally such that <img alt="sum weights" src="https://latex.codecogs.com/svg.image?\sum_i%20w_i=1" />
 
 **Intuition**
 
@@ -129,13 +124,13 @@ This design is deliberately simple and transparent, enabling future extensions (
 
 Confidence is mapped to **navigation modes** via thresholds:
 
-* `th_aggressive` (default: 0.7)
-* `th_conservative` (default: 0.4)
+* `th_aggressive` (default: `0.7`)
+* `th_conservative` (default: `0.4`)
 
 Mapping:
 
-* If (C(t) \ge \text{th_aggressive}) → `AGGRESSIVE`
-* Else if (C(t) \ge \text{th_conservative}) → `CONSERVATIVE`
+* If <img alt="C(t) ge th_aggressive" src="https://latex.codecogs.com/svg.image?C(t)\ge\mathrm{th}_{aggressive}" /> → `AGGRESSIVE`
+* Else if <img alt="C(t) ge th_conservative" src="https://latex.codecogs.com/svg.image?C(t)\ge\mathrm{th}_{conservative}" /> → `CONSERVATIVE`
 * Else → `SAFE`
 
 Each mode can correspond to different:
@@ -153,7 +148,7 @@ In this baseline, the mode directly controls a **velocity limit**.
 
 Two ROS 2 nodes:
 
-```
+```text
 /vo_uncertainty   /slam_quality   /drift_norm   /sensor_noise
       \              |             /              /
        \             |            /              /
@@ -175,7 +170,7 @@ Two ROS 2 nodes:
 **Responsibilities**
 
 * Subscribes to perception/localization indicators
-* Computes (C(t))
+* Computes <img alt="C(t)" src="https://latex.codecogs.com/svg.image?C(t)" />
 * Publishes confidence and navigation mode
 
 **Subscriptions**
@@ -184,15 +179,15 @@ Two ROS 2 nodes:
 | ----------------- | ------------------ | ------------------------------------- |
 | `/vo_uncertainty` | `std_msgs/Float32` | VO uncertainty, 0 = good, 1 = bad     |
 | `/slam_quality`   | `std_msgs/Float32` | SLAM quality, 0 = poor, 1 = excellent |
-| `/drift_norm`     | `std_msgs/Float32` | Normalized drift [0, 1]               |
-| `/sensor_noise`   | `std_msgs/Float32` | Normalized noise level [0, 1]         |
+| `/drift_norm`     | `std_msgs/Float32` | Normalized drift `[0, 1]`             |
+| `/sensor_noise`   | `std_msgs/Float32` | Normalized noise level `[0, 1]`       |
 
 **Publications**
 
-| Topic               | Type               | Description                          |
-| ------------------- | ------------------ | ------------------------------------ |
-| `/robot_confidence` | `std_msgs/Float32` | Scalar confidence (C(t)) ∈ [0,1]     |
-| `/navigation_mode`  | `std_msgs/String`  | `AGGRESSIVE`, `CONSERVATIVE`, `SAFE` |
+| Topic               | Type               | Description                                                                                      |
+| ------------------- | ------------------ | ------------------------------------------------------------------------------------------------ |
+| `/robot_confidence` | `std_msgs/Float32` | Scalar confidence <img alt="C(t)" src="https://latex.codecogs.com/svg.image?C(t)" /> in `[0, 1]` |
+| `/navigation_mode`  | `std_msgs/String`  | `AGGRESSIVE`, `CONSERVATIVE`, or `SAFE`                                                          |
 
 ---
 
@@ -319,16 +314,16 @@ Compare:
 
 ### Ablation & Sensitivity
 
-* Different weights (w_i)
-* Different thresholds (`th_aggressive`, `th_conservative`)
-* Delay between degradation and mode adaptation
+* Effect of different weight configurations
+* Effect of different thresholds
+* Offset/delay between degradation and mode adaptation
 
 ---
 
 ## Extensions & Future Work
 
 * **Learning-based Confidence Estimation**
-  Train a small model to predict (C(t)) from richer features (covariances, tracking flags, loop closures).
+  Train a small model to predict <img alt="C(t)" src="https://latex.codecogs.com/svg.image?C(t)" /> from richer features (covariances, tracking flags, loop closures).
 
 * **Calibration Analysis**
   Evaluate confidence vs. failure probability (reliability diagrams, Brier score).
